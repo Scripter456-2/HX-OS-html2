@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HX App Store</title>
+  <link rel="stylesheet" href="../index.css">
+  <style>
+    body {
+      background: transparent;
+      padding: 1.5rem;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow-y: auto;
+      height: 100vh;
+    }
+    
+    .store-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .store-hero {
+      padding: 2rem;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.2) 0%, rgba(255, 255, 255, 0.02) 100%);
+      border: 1px solid var(--bg-border);
+      text-align: center;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .store-hero h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    
+    .store-hero p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    
+    .apps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .store-card {
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+      height: 250px;
+      transition: var(--transition-bounce);
+    }
+    
+    .store-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-color);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-top {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    
+    .app-icon-wrapper {
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--bg-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .app-icon-wrapper img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+    
+    .app-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    
+    .app-info h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+    
+    .app-info .license-badge {
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      width: max-content;
+      color: var(--text-muted);
+    }
+    
+    .app-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      flex-grow: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .card-action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .action-btn {
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition-smooth);
+    }
+    
+    .btn-install {
+      background: var(--accent-color);
+      color: white;
+      box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.3);
+    }
+    
+    .btn-install:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(var(--accent-rgb), 0.5);
+    }
+    
+    .btn-installed {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border: 1px solid var(--bg-border);
+      cursor: default;
+    }
+    
+    .btn-system {
+      background: rgba(var(--accent-rgb), 0.1);
+      color: var(--accent-color);
+      border: 1px solid rgba(var(--accent-rgb), 0.2);
+      cursor: default;
+    }
+    
+    /* Fallback emoji styling */
+    .emoji-fallback {
+      font-size: 1.8rem;
+    }
+  </style>
+</head>
+<body class="theme-dark">
+  <div class="store-container">
+    <div class="store-hero">
+      <h1>HX App Store</h1>
+      <p>Discover utility tools, system components, and custom frames for HX OS.</p>
+    </div>
+    
+    <div class="apps-grid" id="apps-grid">
+      <!-- Loaded dynamically via JS -->
+    </div>
+  </div>
+
+  <script>
+    // Theme sync helper
+    function syncTheme() {
+      if (window.parent && window.parent.document) {
+        document.body.className = window.parent.document.body.className;
+        const accent = window.parent.document.documentElement.style.getPropertyValue('--accent-color');
+        document.documentElement.style.setProperty('--accent-color', accent);
+        const accentRgb = window.parent.document.documentElement.style.getPropertyValue('--accent-rgb');
+        document.documentElement.style.setProperty('--accent-rgb', accentRgb);
+      }
+    }
+    window.onload = () => {
+      syncTheme();
+      setInterval(syncTheme, 1000);
+      loadApps();
+    };
+
+    async function loadApps() {
+      if (!window.parent.eel) return;
+      
+      try {
+        const apps = await window.parent.eel.get_apps()();
+        const osData = await window.parent.eel.get_os_data()();
+        
+        const grid = document.getElementById('apps-grid');
+        grid.innerHTML = '';
+        
+        apps.forEach(app => {
+          const isInstalled = osData.InstalledApps.includes(app.name);
+          
+          let buttonHtml = '';
+          if (app.IsStarter) {
+            buttonHtml = `<button class="action-btn btn-system">Core System</button>`;
+          } else if (isInstalled) {
+            buttonHtml = `<button class="action-btn btn-installed">Installed</button>`;
+          } else {
+            buttonHtml = `<button class="action-btn btn-install" onclick="installApp('${app.name}')">Install</button>`;
+          }
+
+          // Fallback emoji icons helper
+          let iconHtml = '';
+          if (app.icon.endsWith('.png') || app.icon.startsWith('apps/icons')) {
+            // Pick a visual emoji based on the app name for instant visual wow
+            let emoji = '❓';
+            if (app.name.toLowerCase().includes('store')) emoji = '🛍️';
+            else if (app.name.toLowerCase().includes('settings')) emoji = '⚙️';
+            else if (app.name.toLowerCase().includes('creator')) emoji = '🛠️';
+            else if (app.name.toLowerCase().includes('notepad')) emoji = '📝';
+            else if (app.name.toLowerCase().includes('browser')) emoji = '🌐';
+            
+            iconHtml = `<div class="emoji-fallback">${emoji}</div>`;
+          } else {
+            // emoji directly
+            iconHtml = `<div class="emoji-fallback">${app.icon}</div>`;
+          }
+          
+          const cardHtml = `
+            <div class="store-card glass-panel">
+              <div class="card-top">
+                <div class="app-icon-wrapper">
+                  ${iconHtml}
+                </div>
+                <div class="app-info">
+                  <h3>${app.name}</h3>
+                  <span class="license-badge">${app.license}</span>
+                </div>
+              </div>
+              <p class="app-desc">${app.description}</p>
+              <div class="card-action">
+                <span>Free</span>
+                ${buttonHtml}
+              </div>
+            </div>
+          `;
+          grid.insertAdjacentHTML('beforeend', cardHtml);
+        });
+      } catch (err) {
+        console.error("Error loading apps:", err);
+      }
+    }
+
+    async function installApp(appName) {
+      if (!window.parent.eel) return;
+      
+      try {
+        const osData = await window.parent.eel.get_os_data()();
+        if (!osData.InstalledApps.includes(appName)) {
+          osData.InstalledApps.push(appName);
+          
+          // Increment virtual memory consumption nicely
+          osData.MemoryUsedBytes += 25489000; // ~25MB simulated
+          
+          await window.parent.eel.save_os_data(osData)();
+          
+          // Trigger parent shell update to draw desktop icon instantly
+          if (window.parent.syncDesktop) {
+            window.parent.syncDesktop();
+          }
+          
+          // Reload grid
+          loadApps();
+        }
+      } catch (err) {
+        console.error("Error installing app:", err);
+      }
+    }
+  </script>
+</body>
+</html>

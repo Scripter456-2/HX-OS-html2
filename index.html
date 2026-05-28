@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HX OS - Operating System Simulator</title>
+  <link rel="stylesheet" href="index.css">
+  <!-- Connect Eel bindings -->
+  <script type="text/javascript" src="/eel.js"></script>
+</head>
+<body class="theme-dark">
+
+  <!-- 1. System Boot Screen -->
+  <div id="boot-screen" class="boot-screen">
+    <div class="boot-logo">HX OS</div>
+    <div class="boot-spinner"></div>
+    <p style="margin-top: 1.5rem; font-family: var(--font-sans); font-size: 0.85rem; color: var(--text-muted); letter-spacing: 0.05em;">SECURE BOOT ACTIVE</p>
+  </div>
+
+  <!-- 2. System Installation Wizard -->
+  <div id="installer-overlay" class="installer-overlay" style="display: none;">
+    <div class="installer-wizard glass-panel">
+      <div id="wizard-step-welcome">
+        <div class="installer-header">
+          <h2>Install HX OS</h2>
+          <p class="installer-subtitle">Welcome to the HX Operating System installer wizard.</p>
+        </div>
+        <img style="width: 120px; height: 120px; margin-bottom: 2rem;" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f72585'><path d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 6h-3V6h-2v3H8v2h3v3h2v-3h3V9z'/></svg>" alt="Install Icon">
+        <div>
+          <button class="installer-action-btn" onclick="goToStep('editions')">Get Started</button>
+        </div>
+      </div>
+
+      <div id="wizard-step-editions" style="display: none;">
+        <div class="installer-header">
+          <h2>Choose HX OS Edition</h2>
+          <p class="installer-subtitle">Select the software configuration tailored to your hardware needs.</p>
+        </div>
+        <div class="editions-grid">
+          <div class="edition-card" id="ed-education" onclick="selectEdition('HX education')">
+            <h4>HX Education</h4>
+            <p>Classroom optimized tools, focused learning filters, lightweight background.</p>
+          </div>
+          <div class="edition-card" id="ed-student" onclick="selectEdition('HX student')">
+            <h4>HX Student</h4>
+            <p>Productivity workspace, student planner widgets, high-efficiency dark theme.</p>
+          </div>
+          <div class="edition-card" id="ed-school" onclick="selectEdition('HX school')">
+            <h4>HX School</h4>
+            <p>Collaborative features, local classroom share nodes, kids friendly layout.</p>
+          </div>
+          <div class="edition-card" id="ed-university" onclick="selectEdition('HX university')">
+            <h4>HX University</h4>
+            <p>Research packages, advanced coding compilers, full engineering libraries.</p>
+          </div>
+          <div class="edition-card" id="ed-home" onclick="selectEdition('HX home')">
+            <h4>HX Home</h4>
+            <p>Perfect for daily browser use, video streaming and default glass customization.</p>
+          </div>
+          <div class="edition-card" id="ed-pro" onclick="selectEdition('HX pro')">
+            <h4>HX Pro</h4>
+            <p>Full power-user tweaks, custom developer toolkits and optimal hardware rates.</p>
+          </div>
+          <div class="edition-card" id="ed-supercomputer" onclick="selectEdition('HX super computer')">
+            <h4>HX Super Computer</h4>
+            <p>Command line CLI environment. Green CRT visual console. Extremely lightweight, no wallpaper.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+          <button class="installer-action-btn" style="background: rgba(255,255,255,0.08); border: 1px solid var(--bg-border); color: var(--text-main);" onclick="goToStep('welcome')">Back</button>
+          <button class="installer-action-btn" id="btn-edition-next" disabled onclick="startInstallation()">Begin Setup</button>
+        </div>
+      </div>
+
+      <div id="wizard-step-progress" style="display: none;">
+        <div class="installer-header">
+          <h2>Configuring Kernel Files</h2>
+          <p class="installer-subtitle" id="wizard-progress-title">Writing system files into internal disk partition...</p>
+        </div>
+        <div class="installer-progress-container">
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="wizard-progress-bar"></div>
+          </div>
+          <div class="progress-log" id="wizard-progress-log">Initializing partition mount...</div>
+        </div>
+      </div>
+
+      <div id="wizard-step-complete" style="display: none;">
+        <div class="installer-header">
+          <h2>Installation Complete</h2>
+          <p class="installer-subtitle">HX OS is configured and ready for production boot cycles.</p>
+        </div>
+        <img style="width: 100px; height: 100px; margin-bottom: 2rem;" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232ecc71'><path d='M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z'/></svg>" alt="Success Icon">
+        <div>
+          <button class="installer-action-btn" style="background: #2ecc71; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.4);" onclick="bootSystem()">Start HX OS</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Dynamic Visual Desktop UI -->
+  <div id="desktop-shell" class="desktop-shell" style="display: none;">
+    <div id="os-background" class="os-background"></div>
+    
+    <!-- Drag/Drop Workspace Area -->
+    <div class="desktop-workspace" id="desktop-workspace" ondragover="event.preventDefault()">
+      <!-- Desktop Icons -->
+      <div class="desktop-icons-container" id="desktop-icons">
+        <!-- Rendered by JS -->
+      </div>
+      
+      <!-- Floating Windows Stack will spawn here -->
+    </div>
+
+    <!-- Start Menu Drawer -->
+    <div class="start-menu glass-panel" id="start-menu">
+      <input type="text" class="start-search-box" id="start-search" placeholder="Type app name to filter..." oninput="filterStartApps()">
+      <div class="start-section-title">Pinned Applications</div>
+      <div class="start-apps-grid" id="start-apps-grid">
+        <!-- Rendered by JS -->
+      </div>
+      <div class="start-footer">
+        <div class="start-user">
+          <div class="start-user-avatar" id="avatar-char">H</div>
+          <div>
+            <div class="start-user-name" id="user-role-label">HX User</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted);" id="user-edition-label">HX Pro Edition</div>
+          </div>
+        </div>
+        <button class="power-btn" onclick="shutdownSystem()" title="Shutdown/Reboot">⏻</button>
+      </div>
+    </div>
+
+    <!-- Bottom Taskbar -->
+    <div class="system-taskbar glass-panel" id="system-taskbar">
+      <div class="taskbar-left">
+        <button class="start-btn" onclick="toggleStartMenu()">HX</button>
+        <div class="taskbar-shortcuts" id="taskbar-shortcuts">
+          <!-- Quick shortcuts generated by JS -->
+        </div>
+      </div>
+      <div class="taskbar-right">
+        <div class="system-clock" id="system-clock">12:00 PM</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Retro CRT Command Line Terminal Shell (HX Super Computer Mode) -->
+  <div id="terminal-shell" class="terminal-shell" style="display: none;">
+    <div class="crt-overlay"></div>
+    <div class="terminal-container" id="terminal-container" onclick="focusTerminal()">
+      <div class="terminal-log" id="terminal-log"></div>
+      <div class="terminal-prompt-line">
+        <span class="terminal-prompt-symbol">HX_SUPER_COMPUTER@OS:~#</span>
+        <input type="text" class="terminal-input" id="terminal-input" autocomplete="off" autofocus onkeydown="handleTerminalCommand(event)">
+      </div>
+    </div>
+  </div>
+
+  <!-- Main System Core Script -->
+  <script src="index.js"></script>
+</body>
+</html>

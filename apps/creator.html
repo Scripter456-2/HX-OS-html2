@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HX App Creator</title>
+  <link rel="stylesheet" href="../index.css">
+  <style>
+    body {
+      background: transparent;
+      padding: 1.5rem;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow-y: auto;
+      height: 100vh;
+    }
+    
+    .creator-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .creator-panel {
+      border-radius: 12px;
+      padding: 2rem;
+    }
+    
+    .creator-panel h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .creator-panel p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+    
+    .form-group label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--accent-color);
+    }
+    
+    .form-group input, .form-group textarea {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--bg-border);
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      font-family: var(--font-sans);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+    
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--accent-color);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.2);
+    }
+    
+    .submit-btn {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8rem 1.8rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.3);
+      transition: var(--transition-bounce);
+      margin-top: 0.5rem;
+      align-self: flex-start;
+    }
+    
+    .submit-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.5);
+    }
+    
+    /* Success Alert */
+    .success-alert {
+      display: none;
+      background: rgba(46, 204, 113, 0.15);
+      border: 1px solid #2ecc71;
+      color: #2ecc71;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      align-items: center;
+      gap: 0.75rem;
+    }
+  </style>
+</head>
+<body class="theme-dark">
+  <div class="creator-container">
+    <div class="creator-panel glass-panel">
+      <h2>🛠️ Developer App Creator</h2>
+      <p>Configure custom layout containers or register standard web tools to mount in an iframe.</p>
+      
+      <div class="success-alert" id="success-alert">
+        <span>✅</span>
+        <span id="alert-msg">Application registered and preinstalled successfully!</span>
+      </div>
+      
+      <form id="app-form" onsubmit="registerApp(event)">
+        <div class="form-group">
+          <label for="app-name">Application Name</label>
+          <input type="text" id="app-name" required placeholder="e.g., Space Invaders">
+        </div>
+        
+        <div class="form-group">
+          <label for="app-icon">Application Icon (Emoji or path.png)</label>
+          <input type="text" id="app-icon" required placeholder="e.g., 👾 or apps/icons/custom.png">
+        </div>
+        
+        <div class="form-group">
+          <label for="app-path">Iframe Path / Web URL</label>
+          <input type="text" id="app-path" required placeholder="e.g., https://playclassic.games/games/space-invaders/ or apps/local.html">
+        </div>
+        
+        <div class="form-group">
+          <label for="app-desc">Short Description</label>
+          <textarea id="app-desc" rows="3" required placeholder="Describe what the application does..."></textarea>
+        </div>
+        
+        <button type="submit" class="submit-btn">Compile & Mount App</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Theme sync helper
+    function syncTheme() {
+      if (window.parent && window.parent.document) {
+        document.body.className = window.parent.document.body.className;
+        const accent = window.parent.document.documentElement.style.getPropertyValue('--accent-color');
+        document.documentElement.style.setProperty('--accent-color', accent);
+        const accentRgb = window.parent.document.documentElement.style.getPropertyValue('--accent-rgb');
+        document.documentElement.style.setProperty('--accent-rgb', accentRgb);
+      }
+    }
+    window.onload = () => {
+      syncTheme();
+      setInterval(syncTheme, 1000);
+    };
+
+    async function registerApp(e) {
+      e.preventDefault();
+      if (!window.parent.eel) return;
+      
+      const name = document.getElementById('app-name').value.trim();
+      const icon = document.getElementById('app-icon').value.trim();
+      const path = document.getElementById('app-path').value.trim();
+      const description = document.getElementById('app-desc').value.trim();
+      
+      try {
+        const apps = await window.parent.eel.get_apps()();
+        
+        // Check for duplicates
+        if (apps.some(a => a.name.toLowerCase() === name.toLowerCase())) {
+          alert(`Application named "${name}" already exists!`);
+          return;
+        }
+        
+        // Create new app record
+        const newApp = {
+          name: name,
+          icon: icon,
+          path: path,
+          license: `HX-DEV-${Math.floor(100 + Math.random() * 900)}`,
+          IsStarter: false,
+          description: description
+        };
+        
+        // Add to registry and save
+        apps.push(newApp);
+        await window.parent.eel.save_apps(apps)();
+        
+        // Mark as installed in OS.json
+        const osData = await window.parent.eel.get_os_data()();
+        if (!osData.InstalledApps.includes(name)) {
+          osData.InstalledApps.push(name);
+          osData.MemoryUsedBytes += 12890400; // simulated app footprint
+          await window.parent.eel.save_os_data(osData)();
+        }
+        
+        // Trigger success alert
+        const alertDiv = document.getElementById('success-alert');
+        document.getElementById('alert-msg').innerText = `"${name}" compiled successfully and loaded onto the Desktop!`;
+        alertDiv.style.display = 'flex';
+        
+        // Clear form
+        document.getElementById('app-form').reset();
+        
+        // Trigger parent redraw
+        if (window.parent.syncDesktop) {
+          window.parent.syncDesktop();
+        }
+        
+        // Auto hide alert after 4 seconds
+        setTimeout(() => {
+          alertDiv.style.display = 'none';
+        }, 4000);
+        
+      } catch (err) {
+        console.error("Error creating app:", err);
+      }
+    }
+  </script>
+</body>
+</html>

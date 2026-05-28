@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HX Developer Blog</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #1e1e2f 0%, #111119 100%);
+      color: #f4f4f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 1.5rem;
+      overflow-y: auto;
+      min-height: 100vh;
+    }
+    
+    .blog-container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .blog-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 1.5rem;
+    }
+    
+    .blog-header h1 {
+      font-size: 2.2rem;
+      margin: 0 0 0.5rem 0;
+      background: linear-gradient(45deg, #00b4d8, #0077b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .blog-header p {
+      color: #888899;
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    
+    .post-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+    
+    .post-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 180, 216, 0.4);
+    }
+    
+    .post-meta {
+      font-size: 0.75rem;
+      color: #00b4d8;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    
+    .post-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 0 0 1rem 0;
+      color: #fff;
+    }
+    
+    .post-content {
+      font-size: 0.92rem;
+      color: #ccc;
+      line-height: 1.6;
+    }
+    
+    .tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      background: rgba(0, 180, 216, 0.15);
+      color: #00b4d8;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-top: 1rem;
+      margin-right: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="blog-container">
+    <div class="blog-header">
+      <h1>HX Dev Log</h1>
+      <p>Technical updates on building the HX OS kernel, shell and applications.</p>
+    </div>
+    
+    <!-- Post 1 -->
+    <div class="post-card">
+      <div class="post-meta">May 28, 2026 | System Release</div>
+      <h2 class="post-title">HX OS Monolithic Beta 3.0 Standard Build</h2>
+      <div class="post-content">
+        <p>Today we are officially rolling out the third Monolithic build of HX OS! This update fully implements high-fidelity glassmorphism layers, dynamic theme colors matching your wallpapers, and a sandboxed layout running Eel python endpoints.</p>
+        <p>Most importantly, we have successfully integrated a dual-mode workflow. In standard versions, you enjoy a beautiful, translucent GUI desktop workspace. On the "HX Super Computer" edition, the OS instantly boots to a command console prompt with a CRT monitor visual filter, whilst retaining full floating visual app capabilities!</p>
+      </div>
+      <div>
+        <span class="tag">#release</span>
+        <span class="tag">#monolithic</span>
+        <span class="tag">#supercomputer</span>
+      </div>
+    </div>
+    
+    <!-- Post 2 -->
+    <div class="post-card">
+      <div class="post-meta">May 15, 2026 | Developer Notes</div>
+      <h2 class="post-title">The Magic of Acrylic Blur Backdrops</h2>
+      <div class="post-content">
+        <p>In modern interface architectures, achieving a sense of hierarchy is essential. In HX OS, we solved this by loading a Mica glass overlay utilizing CSS backdrop-filter filters combined with a wallpaper-saturated color variable. When windows are dragged or resized, the colors blend together dynamically, presenting an incredibly premium and harmonic desktop aesthetic.</p>
+      </div>
+      <div>
+        <span class="tag">#css</span>
+        <span class="tag">#ux-design</span>
+        <span class="tag">#glassmorphism</span>
+      </div>
+    </div>
+    
+  </div>
+</body>
+</html>

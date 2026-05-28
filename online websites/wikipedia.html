@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HX Wikipedia</title>
+  <style>
+    body {
+      background-color: #f6f6f6;
+      color: #202122;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+    
+    .wiki-sidebar {
+      width: 160px;
+      padding: 1.5rem 1rem;
+      border-right: 1px solid #a2a9b1;
+      height: 100vh;
+      box-sizing: border-box;
+      background: #f6f6f6;
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+    
+    .wiki-sidebar h2 {
+      font-size: 1.2rem;
+      font-weight: normal;
+      font-family: serif;
+      margin: 0 0 1.5rem 0;
+      border-bottom: 1px solid #a2a9b1;
+      padding-bottom: 0.3rem;
+      color: #000;
+    }
+    
+    .wiki-sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .wiki-sidebar li {
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+    }
+    
+    .wiki-sidebar a {
+      color: #0645ad;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .wiki-sidebar a:hover {
+      text-decoration: underline;
+    }
+    
+    .wiki-content {
+      margin-left: 170px;
+      padding: 2rem;
+      flex: 1;
+      max-width: 800px;
+      box-sizing: border-box;
+    }
+    
+    .wiki-header {
+      border-bottom: 1px solid #a2a9b1;
+      padding-bottom: 0.25rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .wiki-header h1 {
+      font-family: serif;
+      font-size: 2.2rem;
+      font-weight: normal;
+      margin: 0;
+      color: #000;
+    }
+    
+    .wiki-header span {
+      font-size: 0.8rem;
+      color: #54595d;
+    }
+    
+    .wiki-article {
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+    
+    .wiki-article p {
+      margin-bottom: 1.25rem;
+    }
+    
+    .info-box {
+      float: right;
+      width: 250px;
+      border: 1px solid #a2a9b1;
+      background-color: #f8f9fa;
+      padding: 0.75rem;
+      margin-left: 1.5rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      border-radius: 2px;
+    }
+    
+    .info-box-title {
+      font-weight: bold;
+      text-align: center;
+      background: #eaecf0;
+      padding: 0.3rem;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .info-box-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #eaecf0;
+      padding: 0.25rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation sidebar -->
+  <div class="wiki-sidebar">
+    <h2>HX Wiki</h2>
+    <ul>
+      <li><a onclick="loadArticle('hx_os')">HX OS</a></li>
+      <li><a onclick="loadArticle('operating_systems')">Operating System</a></li>
+      <li><a onclick="loadArticle('supercomputers')">Supercomputing</a></li>
+      <li><a onclick="loadArticle('eel')">Eel (Python)</a></li>
+    </ul>
+  </div>
+
+  <!-- Central Article Panel -->
+  <div class="wiki-content">
+    <div id="article-view">
+      <!-- Article populated dynamically -->
+    </div>
+  </div>
+
+  <script>
+    const articles = {
+      hx_os: `
+        <div class="wiki-header">
+          <h1>HX OS</h1>
+          <span>From Wikipedia, the free encyclopedia</span>
+        </div>
+        <div class="wiki-article">
+          <div class="info-box">
+            <div class="info-box-title">HX OS</div>
+            <div class="info-box-row">
+              <strong>Developer:</strong>
+              <span>DeepMind Team</span>
+            </div>
+            <div class="info-box-row">
+              <strong>Kernel Type:</strong>
+              <span>Monolithic</span>
+            </div>
+            <div class="info-box-row">
+              <strong>Interface:</strong>
+              <span>Glass GUI / CRT CLI</span>
+            </div>
+            <div class="info-box-row">
+              <strong>License:</strong>
+              <span>Proprietary</span>
+            </div>
+          </div>
+          
+          <p><strong>HX OS</strong> is an advanced, lightweight simulated operating system environment designed to operate inside graphical sandbox frames utilizing an Eel-driven Python backend server and dynamic JavaScript workspace overlays.</p>
+          
+          <p>HX OS features advanced Mica-tinting acrylic transparency glass layers, responsive dark/light personalizations, and a robust window layer layout letting users drag and resize apps freely. It offers modular, isolated utility panels, including an integrated software licensing App Store, full developer App Creator registry nodes, and complete hardware metrics dashboards.</p>
+          
+          <p>Additionally, HX OS supports a specialized <strong>HX Super Computer</strong> edition, which shifts the system environment entirely into a retro green-phosphor CRT command terminal workspace, where graphical window applications can still execute in overlay floats directly on top of the shell process.</p>
+        </div>
+      `,
+      operating_systems: `
+        <div class="wiki-header">
+          <h1>Operating System</h1>
+          <span>From Wikipedia, the free encyclopedia</span>
+        </div>
+        <div class="wiki-article">
+          <p>An <strong>operating system</strong> (<strong>OS</strong>) is system software that manages computer hardware, software resources, and provides common services for computer programs.</p>
+          <p>Time-sharing operating systems schedule tasks for efficient use of the system and may also include engines for cost allocation of processor time, mass storage, printing, and other resources.</p>
+          <p>For hardware functions such as input and output and memory allocation, the operating system acts as an intermediary between programs and the computer hardware, although the application code is usually executed directly by the hardware and frequently makes system calls to an OS function or is interrupted by it.</p>
+        </div>
+      `,
+      supercomputers: `
+        <div class="wiki-header">
+          <h1>Supercomputer</h1>
+          <span>From Wikipedia, the free encyclopedia</span>
+        </div>
+        <div class="wiki-article">
+          <p>A <strong>supercomputer</strong> is a computer with a high level of performance compared to a general-purpose computer. The performance of a supercomputer is commonly measured in floating-point operations per second (FLOPS) instead of million instructions per second (MIPS).</p>
+          <p>Supercomputers play an important role in the field of computational science, and are used for a wide range of computationally intensive tasks in various fields, including quantum mechanics, weather forecasting, climate research, oil and gas exploration, molecular modeling, and physical simulations.</p>
+        </div>
+      `,
+      eel: `
+        <div class="wiki-header">
+          <h1>Eel (Python Library)</h1>
+          <span>From Wikipedia, the free encyclopedia</span>
+        </div>
+        <div class="wiki-article">
+          <p><strong>Eel</strong> is a lightweight Python library for making simple electron-like offline HTML/JS GUI apps, with full access to Python-capabilities and libraries.</p>
+          <p>Eel hosts a local webserver, then lets you write all your HTML, CSS, and JS files to render your app interface. Unlike massive electron apps, Eel operates on top of standard browser instances, making it highly lightweight and fast to initialize.</p>
+        </div>
+      `
+    };
+
+    function loadArticle(id) {
+      const view = document.getElementById('article-view');
+      if (articles[id]) {
+        view.innerHTML = articles[id];
+        // Scroll to top of window
+        window.scrollTo(0,0);
+      }
+    }
+
+    // Default load
+    window.onload = () => {
+      loadArticle('hx_os');
+    }
+  </script>
+</body>
+</html>

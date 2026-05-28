@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HX OS Settings</title>
+  <link rel="stylesheet" href="../index.css">
+  <style>
+    body {
+      background: transparent;
+      padding: 1.5rem;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow-y: auto;
+      height: 100vh;
+    }
+    
+    .settings-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    
+    .settings-section {
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    
+    .settings-section h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--bg-border);
+      padding-bottom: 0.5rem;
+    }
+    
+    /* Wallpaper Grid */
+    .wallpapers-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 1rem;
+    }
+    
+    .wallpaper-thumb {
+      height: 90px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0.5rem;
+      transition: var(--transition-bounce);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .wallpaper-thumb:hover {
+      transform: scale(1.04);
+    }
+    
+    .wallpaper-thumb.active {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.5);
+    }
+    
+    .wallpaper-thumb span {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      color: #fff;
+      z-index: 5;
+    }
+    
+    .wallpaper-thumb::before {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0; top: 0;
+      background: linear-gradient(rgba(0,0,0,0) 50%, rgba(0,0,0,0.5) 100%);
+      z-index: 1;
+    }
+    
+    /* Theme Toggle Bar */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      border: 1px solid var(--bg-border);
+    }
+    
+    .theme-selector {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .theme-btn {
+      padding: 0.4rem 1.2rem;
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      border: 1px solid var(--bg-border);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      transition: var(--transition-smooth);
+    }
+    
+    .theme-btn.active {
+      background: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+      box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.4);
+    }
+    
+    /* Memory / Storage stats */
+    .stat-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--bg-border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-progress {
+      height: 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .stat-progress-bar {
+      height: 100%;
+      background: var(--accent-color);
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body class="theme-dark">
+  <div class="settings-container">
+    
+    <!-- Section 1: System Info -->
+    <div class="settings-section glass-panel">
+      <h2>🖥️ System Specifications</h2>
+      <div class="stat-card">
+        <div class="stat-row">
+          <strong>Operating System:</strong>
+          <span>HX OS Simulation</span>
+        </div>
+        <div class="stat-row">
+          <strong>Product Version:</strong>
+          <span id="sys-edition" class="edition-badge">Loading...</span>
+        </div>
+        <div class="stat-row">
+          <strong>Processor:</strong>
+          <span>HX-9 Advanced Silicon Processor @ 4.80 GHz</span>
+        </div>
+        <div class="stat-row">
+          <strong>System Memory:</strong>
+          <span>16.0 GB RAM</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-row">
+          <strong>Virtual Storage Usage</strong>
+          <span id="sys-storage-txt">0 MB / 16 GB</span>
+        </div>
+        <div class="stat-progress">
+          <div class="stat-progress-bar" id="sys-storage-bar" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Personalization -->
+    <div class="settings-section glass-panel">
+      <h2>🎨 Personalization & Styles</h2>
+      
+      <!-- Theme Switcher -->
+      <div style="margin-bottom: 1.5rem;">
+        <h3 style="font-size: 0.95rem; margin-bottom: 0.5rem;">Color Theme Mode</h3>
+        <div class="toggle-row">
+          <span>Choose dynamic dark/light interface mode</span>
+          <div class="theme-selector">
+            <button class="theme-btn" id="btn-theme-dark" onclick="setThemeMode('dark')">Dark Theme</button>
+            <button class="theme-btn" id="btn-theme-light" onclick="setThemeMode('light')">Light Theme</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Wallpaper selection -->
+      <div>
+        <h3 style="font-size: 0.95rem; margin-bottom: 0.75rem;">Desktop Wallpapers</h3>
+        <div class="wallpapers-list" id="wallpapers-list">
+          <!-- Loaded dynamically -->
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+  <script>
+    // Theme sync helper
+    function syncTheme() {
+      if (window.parent && window.parent.document) {
+        document.body.className = window.parent.document.body.className;
+        const accent = window.parent.document.documentElement.style.getPropertyValue('--accent-color');
+        document.documentElement.style.setProperty('--accent-color', accent);
+        const accentRgb = window.parent.document.documentElement.style.getPropertyValue('--accent-rgb');
+        document.documentElement.style.setProperty('--accent-rgb', accentRgb);
+      }
+    }
+
+    window.onload = () => {
+      syncTheme();
+      setInterval(syncTheme, 1000);
+      loadSystemInfo();
+      loadWallpapers();
+    };
+
+    async function loadSystemInfo() {
+      if (!window.parent.eel) return;
+      try {
+        const osData = await window.parent.eel.get_os_data()();
+        document.getElementById('sys-edition').innerText = osData.Edition || "HX Standard";
+        
+        // Storage Calculation
+        const usedMB = (osData.MemoryUsedBytes / (1024 * 1024)).toFixed(1);
+        const totalGB = (osData.TotalMemoryBytes / (1024 * 1024 * 1024)).toFixed(0);
+        
+        document.getElementById('sys-storage-txt').innerText = `${usedMB} MB / ${totalGB} GB`;
+        
+        const percentage = ((osData.MemoryUsedBytes / osData.TotalMemoryBytes) * 100).toFixed(1);
+        document.getElementById('sys-storage-bar').style.width = `${percentage}%`;
+      } catch (err) {
+        console.error("Error loading system info:", err);
+      }
+    }
+
+    async function loadWallpapers() {
+      if (!window.parent.eel) return;
+      try {
+        const wallpapers = await window.parent.eel.get_wallpapers()();
+        const settings = await window.parent.eel.get_settings()();
+        
+        // Set active theme button state
+        if (settings.Theme === 'light') {
+          document.getElementById('btn-theme-light').classList.add('active');
+          document.getElementById('btn-theme-dark').classList.remove('active');
+        } else {
+          document.getElementById('btn-theme-dark').classList.add('active');
+          document.getElementById('btn-theme-light').classList.remove('active');
+        }
+        
+        const listDiv = document.getElementById('wallpapers-list');
+        listDiv.innerHTML = '';
+        
+        wallpapers.forEach(wp => {
+          const isActive = settings.WallpaperId === wp.id;
+          const wpCard = document.createElement('div');
+          wpCard.className = `wallpaper-thumb ${isActive ? 'active' : ''}`;
+          wpCard.style.background = wp.style;
+          wpCard.onclick = () => selectWallpaper(wp.id);
+          wpCard.innerHTML = `<span>${wp.name}</span>`;
+          listDiv.appendChild(wpCard);
+        });
+      } catch (err) {
+        console.error("Error loading wallpapers:", err);
+      }
+    }
+
+    async function setThemeMode(theme) {
+      if (!window.parent.eel) return;
+      try {
+        const settings = await window.parent.eel.get_settings()();
+        settings.Theme = theme;
+        await window.parent.eel.save_settings(settings)();
+        
+        // Sync instantly
+        if (window.parent.applySettings) {
+          window.parent.applySettings();
+        }
+        
+        loadWallpapers();
+      } catch (err) {
+        console.error("Error updating theme:", err);
+      }
+    }
+
+    async function selectWallpaper(wallpaperId) {
+      if (!window.parent.eel) return;
+      try {
+        const settings = await window.parent.eel.get_settings()();
+        const wallpapers = await window.parent.eel.get_wallpapers()();
+        
+        const selectedWp = wallpapers.find(w => w.id === wallpaperId);
+        if (selectedWp) {
+          settings.WallpaperId = wallpaperId;
+          settings.AccentColor = selectedWp.accent;
+          // Dynamically shift standard theme modes if wallpaper calls for light/dark optimization
+          settings.Theme = selectedWp.theme;
+          
+          await window.parent.eel.save_settings(settings)();
+          
+          // Trigger parent redraw
+          if (window.parent.applySettings) {
+            window.parent.applySettings();
+          }
+          
+          loadWallpapers();
+        }
+      } catch (err) {
+        console.error("Error choosing wallpaper:", err);
+      }
+    }
+  </script>
+</body>
+</html>

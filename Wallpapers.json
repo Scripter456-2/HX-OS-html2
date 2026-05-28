@@ -1,0 +1,37 @@
+[
+  {
+    "id": "neon_sunset",
+    "name": "Neon Sunset",
+    "style": "linear-gradient(135deg, #f72585, #7209b7, #3f37c9)",
+    "theme": "dark",
+    "accent": "#f72585"
+  },
+  {
+    "id": "aurora_borealis",
+    "name": "Aurora Borealis",
+    "style": "linear-gradient(135deg, #00b4d8, #0077b6, #03045e)",
+    "theme": "dark",
+    "accent": "#00b4d8"
+  },
+  {
+    "id": "cyber_sky",
+    "name": "Cyber Sky",
+    "style": "linear-gradient(135deg, #121212, #24243e, #300030)",
+    "theme": "dark",
+    "accent": "#9d4edd"
+  },
+  {
+    "id": "misty_morning",
+    "name": "Misty Morning",
+    "style": "linear-gradient(135deg, #e0aaff, #c77dff, #9d4edd)",
+    "theme": "light",
+    "accent": "#7b2cbf"
+  },
+  {
+    "id": "spring_breeze",
+    "name": "Spring Breeze",
+    "style": "linear-gradient(135deg, #a8ff78, #78ffd6)",
+    "theme": "light",
+    "accent": "#20bf6b"
+  }
+]

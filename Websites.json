@@ -1,0 +1,44 @@
+[
+  {
+    "name": "HX Search Engine",
+    "url": "online websites/google.html",
+    "description": "Simulated web search portal for index databases.",
+    "isLocal": true,
+    "category": "Search"
+  },
+  {
+    "name": "HX Wikipedia",
+    "url": "online websites/wikipedia.html",
+    "description": "An offline encyclopedia compiling articles on computing and HX history.",
+    "isLocal": true,
+    "category": "Reference"
+  },
+  {
+    "name": "HX Arcade",
+    "url": "online websites/snake.html",
+    "description": "A fully functional retro arcade Snake game.",
+    "isLocal": true,
+    "category": "Entertainment"
+  },
+  {
+    "name": "HX Dev Blog",
+    "url": "online websites/blog.html",
+    "description": "Personal developer log compiling hardware logs.",
+    "isLocal": true,
+    "category": "Social"
+  },
+  {
+    "name": "OpenStreetMap",
+    "url": "https://www.openstreetmap.org/export/embed.html",
+    "description": "Real-time world mapping navigation platform (Iframe-Safe).",
+    "isLocal": false,
+    "category": "Utility"
+  },
+  {
+    "name": "Wikipedia (Online Mobile)",
+    "url": "https://en.m.wikipedia.org",
+    "description": "Real online mobile Wikipedia portal.",
+    "isLocal": false,
+    "category": "Reference"
+  }
+]

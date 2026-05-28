@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HX Browser</title>
+  <link rel="stylesheet" href="../index.css">
+  <style>
+    body {
+      background: transparent;
+      padding: 0.75rem;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    .browser-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .browser-navbar {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--bg-border);
+      border-radius: 8px;
+      padding: 0.4rem;
+    }
+    
+    .browser-nav-btn {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--bg-border);
+      color: var(--text-main);
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      transition: var(--transition-smooth);
+    }
+    
+    .browser-nav-btn:hover {
+      background: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+    }
+    
+    .browser-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--bg-border);
+      border-radius: 6px;
+      padding: 0.4rem 0.8rem;
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+    
+    .browser-input:focus {
+      border-color: var(--accent-color);
+      background: rgba(0, 0, 0, 0.25);
+    }
+    
+    .quick-links {
+      display: flex;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      padding: 0.1rem 0.25rem;
+      align-items: center;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    
+    .quick-link {
+      cursor: pointer;
+      color: var(--accent-color);
+      text-decoration: underline;
+    }
+    
+    .quick-link:hover {
+      color: var(--text-main);
+    }
+    
+    .browser-viewport {
+      flex: 1;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid var(--bg-border);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .browser-viewport iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: white;
+    }
+    
+    .viewport-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(18, 18, 26, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+      z-index: 10;
+      color: white;
+    }
+    
+    .viewport-overlay h3 {
+      margin-bottom: 0.5rem;
+    }
+    
+    .viewport-overlay p {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-bottom: 1.5rem;
+      max-width: 450px;
+    }
+    
+    .viewport-overlay button {
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="theme-dark">
+  <div class="browser-container">
+    
+    <!-- Navbar controls -->
+    <div class="browser-navbar">
+      <button class="browser-nav-btn" onclick="goHome()" title="Home">🏠</button>
+      <button class="browser-nav-btn" onclick="goBack()" title="Back">◀</button>
+      <input type="text" class="browser-input" id="browser-url" value="online websites/google.html" onkeydown="if(event.key==='Enter') navigate()">
+      <button class="browser-nav-btn" onclick="navigate()" title="Navigate">Go</button>
+      <button class="browser-nav-btn" onclick="refresh()" title="Refresh">🔄</button>
+    </div>
+    
+    <!-- Presets drawn dynamically -->
+    <div class="quick-links" id="quick-links-bar">
+      <span>Bookmarks:</span>
+      <!-- Loaded dynamically -->
+    </div>
+    
+    <!-- Web Viewport -->
+    <div class="browser-viewport">
+      <!-- Direct notice layout to instruct framing limitations -->
+      <div class="viewport-overlay" id="viewport-overlay">
+        <h3>🌐 HX Simulated Web Browser</h3>
+        <p>This web browser can navigate real web links (which are iframe compatible) and simulated custom local pages loaded from Websites.json.</p>
+        <button onclick="dismissOverlay()">Launch Home Portal (HX Search)</button>
+      </div>
+      <iframe id="viewport-frame" src="about:blank"></iframe>
+    </div>
+    
+  </div>
+
+  <script>
+    // Theme sync helper
+    function syncTheme() {
+      if (window.parent && window.parent.document) {
+        document.body.className = window.parent.document.body.className;
+        const accent = window.parent.document.documentElement.style.getPropertyValue('--accent-color');
+        document.documentElement.style.setProperty('--accent-color', accent);
+        const accentRgb = window.parent.document.documentElement.style.getPropertyValue('--accent-rgb');
+        document.documentElement.style.setProperty('--accent-rgb', accentRgb);
+      }
+    }
+
+    window.onload = () => {
+      syncTheme();
+      setInterval(syncTheme, 1000);
+      loadBookmarks();
+    };
+
+    async function loadBookmarks() {
+      let eelObj = null;
+      try {
+        if (window.parent && window.parent.eel) {
+          eelObj = window.parent.eel;
+        }
+      } catch (e) {}
+
+      // Fallback bookmarks database if parent is inaccessible
+      const fallbackSites = [
+        { "name": "HX Search Engine", "url": "online websites/google.html" },
+        { "name": "HX Wikipedia", "url": "online websites/wikipedia.html" },
+        { "name": "HX Arcade", "url": "online websites/snake.html" },
+        { "name": "HX Dev Blog", "url": "online websites/blog.html" },
+        { "name": "OpenStreetMap", "url": "https://www.openstreetmap.org/export/embed.html" }
+      ];
+
+      let websites = fallbackSites;
+      if (eelObj) {
+        try {
+          websites = await eelObj.get_websites()();
+        } catch (err) {
+          console.error("Error loading websites from Eel:", err);
+        }
+      }
+
+      const bar = document.getElementById('quick-links-bar');
+      bar.innerHTML = '<span>Bookmarks:</span>';
+      
+      websites.forEach((site, index) => {
+        const link = document.createElement('span');
+        link.className = 'quick-link';
+        link.innerText = site.name;
+        link.onclick = () => loadUrl(site.url);
+        bar.appendChild(link);
+        
+        if (index < websites.length - 1) {
+          bar.insertAdjacentHTML('beforeend', ' | ');
+        }
+      });
+    }
+
+    function dismissOverlay() {
+      document.getElementById('viewport-overlay').style.display = 'none';
+      loadUrl('online websites/google.html');
+    }
+
+    function resolveUrl(url) {
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+      }
+      // Local simulated website relative path resolver
+      return '../' + url;
+    }
+
+    function navigate() {
+      let url = document.getElementById('browser-url').value.trim();
+      
+      // If it's a search term rather than an address, forward it to our google mock!
+      if (!url.includes('.') && !url.startsWith('online websites/') && !url.includes('/')) {
+        // Mock Search!
+        url = 'online websites/google.html';
+        document.getElementById('browser-url').value = url;
+        const targetUrl = resolveUrl(url);
+        document.getElementById('viewport-overlay').style.display = 'none';
+        document.getElementById('viewport-frame').src = targetUrl;
+        return;
+      }
+      
+      if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('online websites/')) {
+        url = 'https://' + url;
+      }
+      
+      document.getElementById('browser-url').value = url;
+      const targetUrl = resolveUrl(url);
+      document.getElementById('viewport-overlay').style.display = 'none';
+      document.getElementById('viewport-frame').src = targetUrl;
+    }
+
+    function loadUrl(url) {
+      document.getElementById('browser-url').value = url;
+      const targetUrl = resolveUrl(url);
+      document.getElementById('viewport-overlay').style.display = 'none';
+      document.getElementById('viewport-frame').src = targetUrl;
+    }
+
+    function goHome() {
+      loadUrl('online websites/google.html');
+    }
+
+    function goBack() {
+      try {
+        document.getElementById('viewport-frame').contentWindow.history.back();
+      } catch (e) {
+        // Silently block cross origin error
+        alert("Cross-origin frame navigation blocked. Choose top menu links.");
+      }
+    }
+
+    function refresh() {
+      const url = document.getElementById('browser-url').value;
+      document.getElementById('viewport-frame').src = resolveUrl(url);
+    }
+  </script>
+</body>
+</html>

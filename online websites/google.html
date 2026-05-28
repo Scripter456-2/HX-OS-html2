@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HX Search Engine</title>
+  <style>
+    body {
+      background-color: #202124;
+      color: #e8eaed;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    .search-wrapper {
+      margin-top: 15vh;
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 1rem;
+      box-sizing: border-box;
+    }
+    
+    .logo {
+      font-size: 3.5rem;
+      font-weight: bold;
+      letter-spacing: -0.05em;
+      margin-bottom: 2rem;
+    }
+    
+    .logo span:nth-child(1) { color: #4285F4; }
+    .logo span:nth-child(2) { color: #EA4335; }
+    .logo span:nth-child(3) { color: #FBBC05; }
+    .logo span:nth-child(4) { color: #4285F4; }
+    .logo span:nth-child(5) { color: #34A853; }
+    .logo span:nth-child(6) { color: #EA4335; }
+    
+    .search-bar-container {
+      width: 100%;
+      position: relative;
+    }
+    
+    .search-input {
+      width: 100%;
+      background: #303134;
+      border: 1px solid #5f6368;
+      border-radius: 24px;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      color: white;
+      outline: none;
+      box-sizing: border-box;
+      transition: background 0.2s;
+    }
+    
+    .search-input:focus {
+      background: #3c4043;
+      border-color: transparent;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+    }
+    
+    .buttons-row {
+      margin-top: 1.8rem;
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .search-btn {
+      background-color: #303134;
+      border: 1px solid #303134;
+      border-radius: 4px;
+      color: #e8eaed;
+      cursor: pointer;
+      font-size: 0.85rem;
+      padding: 0.6rem 1rem;
+      transition: border 0.1s;
+    }
+    
+    .search-btn:hover {
+      border-color: #5f6368;
+      background-color: #3c4043;
+    }
+    
+    /* Search Results Layer */
+    .results-container {
+      width: 100%;
+      max-width: 650px;
+      margin-top: 2rem;
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding: 0 1rem;
+      box-sizing: border-box;
+    }
+    
+    .results-header {
+      font-size: 0.85rem;
+      color: #9aa0a6;
+      border-bottom: 1px solid #3c4043;
+      padding-bottom: 0.5rem;
+    }
+    
+    .result-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    
+    .result-url {
+      font-size: 0.75rem;
+      color: #9aa0a6;
+    }
+    
+    .result-title {
+      font-size: 1.15rem;
+      color: #8ab4f8;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .result-title:hover {
+      text-decoration: underline;
+    }
+    
+    .result-desc {
+      font-size: 0.88rem;
+      color: #bdc1c6;
+      line-height: 1.4;
+    }
+    
+    .no-results {
+      text-align: center;
+      padding: 2rem;
+      color: #9aa0a6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Search Landing Screen -->
+  <div class="search-wrapper" id="search-landing">
+    <div class="logo">
+      <span>H</span><span>X</span><span>S</span><span>e</span><span>a</span><span>r</span><span>c</span><span>h</span>
+    </div>
+    <div class="search-bar-container">
+      <input type="text" class="search-input" id="search-query" placeholder="Search the simulated web..." onkeydown="if(event.key==='Enter') executeSearch()">
+    </div>
+    <div class="buttons-row">
+      <button class="search-btn" onclick="executeSearch()">Search Index</button>
+      <button class="search-btn" onclick="feelingLucky()">I'm Feeling Lucky</button>
+    </div>
+  </div>
+
+  <!-- Search Results Screen -->
+  <div class="results-container" id="results-view">
+    <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1.5rem; width:100%;">
+      <div class="logo" style="font-size: 1.5rem; margin:0; cursor:pointer;" onclick="showLanding()">
+        <span>H</span><span>X</span><span>S</span>
+      </div>
+      <div style="flex:1;">
+        <input type="text" class="search-input" id="search-query-results" onkeydown="if(event.key==='Enter') executeSearchFromResults()">
+      </div>
+    </div>
+    
+    <div class="results-header" id="results-count">About 0 results (0.01 seconds)</div>
+    <div id="results-list" style="display:flex; flex-direction:column; gap:1.5rem;">
+      <!-- Matches rendered dynamically -->
+    </div>
+  </div>
+
+  <script>
+    const defaultSites = [
+      { "name": "HX Wikipedia", "url": "online websites/wikipedia.html", "description": "Encyclopedia compiling articles on computing and HX history." },
+      { "name": "HX Arcade", "url": "online websites/snake.html", "description": "Play retro retro arcade Snake game right in your browser." },
+      { "name": "HX Dev Blog", "url": "online websites/blog.html", "description": "Personal developer log compiling core architectural designs." },
+      { "name": "OpenStreetMap", "url": "https://www.openstreetmap.org/export/embed.html", "description": "Real-time world mapping navigation platform (Iframe-Safe)." }
+    ];
+
+    function getWebsitesList() {
+      // Direct pull from parent local storage or window eel fallback
+      try {
+        const stored = localStorage.getItem('hx_websites');
+        if (stored) return JSON.parse(stored);
+      } catch (e) {}
+      
+      try {
+        if (window.parent && window.parent.parent && window.parent.parent.localStorage) {
+          const stored = window.parent.parent.localStorage.getItem('hx_websites');
+          if (stored) return JSON.parse(stored);
+        }
+      } catch (e) {}
+      
+      return defaultSites;
+    }
+
+    function showLanding() {
+      document.getElementById('search-landing').style.display = 'flex';
+      document.getElementById('results-view').style.display = 'none';
+      document.getElementById('search-query').value = '';
+    }
+
+    function executeSearch() {
+      const q = document.getElementById('search-query').value.trim().toLowerCase();
+      if (!q) return;
+      
+      document.getElementById('search-query-results').value = document.getElementById('search-query').value;
+      performSearchLogic(q);
+    }
+
+    function executeSearchFromResults() {
+      const q = document.getElementById('search-query-results').value.trim().toLowerCase();
+      if (!q) return;
+      performSearchLogic(q);
+    }
+
+    function performSearchLogic(q) {
+      document.getElementById('search-landing').style.display = 'none';
+      document.getElementById('results-view').style.display = 'flex';
+      
+      const sites = getWebsitesList();
+      const listDiv = document.getElementById('results-list');
+      listDiv.innerHTML = '';
+      
+      // Filter logic
+      const matches = sites.filter(s => 
+        s.name.toLowerCase().includes(q) || 
+        s.description.toLowerCase().includes(q) ||
+        s.category?.toLowerCase().includes(q)
+      );
+      
+      document.getElementById('results-count').innerText = `About ${matches.length} results (0.02 seconds)`;
+      
+      if (matches.length === 0) {
+        listDiv.innerHTML = `<div class="no-results">Your search - <strong>${q}</strong> - did not match any simulated documents.</div>`;
+        return;
+      }
+      
+      matches.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        item.innerHTML = `
+          <span class="result-url">${s.url}</span>
+          <a class="result-title" onclick="loadSite('${s.url}')">${s.name}</a>
+          <span class="result-desc">${s.description}</span>
+        `;
+        listDiv.appendChild(item);
+      });
+    }
+
+    function feelingLucky() {
+      const sites = getWebsitesList();
+      const rand = sites[Math.floor(Math.random() * sites.length)];
+      loadSite(rand.url);
+    }
+
+    function loadSite(url) {
+      // In browser frame context: window.parent is browser app
+      if (window.parent && window.parent.loadUrl) {
+        window.parent.loadUrl(url);
+      } else {
+        window.location.href = '../' + url;
+      }
+    }
+  </script>
+</body>
+</html>

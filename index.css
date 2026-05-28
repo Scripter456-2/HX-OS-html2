@@ -1,0 +1,806 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+/* Core Theme System */
+:root {
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  /* Defaults overridden dynamically by settingsos.json/theme */
+  --accent-color: #f72585;
+  --accent-rgb: 247, 37, 133;
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Light / Dark Context Modifiers */
+.theme-dark {
+  --bg-primary: rgba(18, 18, 18, 0.65);
+  --bg-secondary: rgba(30, 30, 30, 0.8);
+  --bg-glass-tint: rgba(247, 37, 133, 0.12); /* wallpaper blend */
+  --bg-border: rgba(255, 255, 255, 0.12);
+  --bg-border-focus: rgba(255, 255, 255, 0.25);
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --shadow-main: rgba(0, 0, 0, 0.5);
+  --glass-blur: blur(25px);
+}
+
+.theme-light {
+  --bg-primary: rgba(255, 255, 255, 0.65);
+  --bg-secondary: rgba(240, 240, 240, 0.8);
+  --bg-glass-tint: rgba(123, 44, 191, 0.08); /* wallpaper blend */
+  --bg-border: rgba(0, 0, 0, 0.12);
+  --bg-border-focus: rgba(0, 0, 0, 0.25);
+  --text-main: #121212;
+  --text-muted: rgba(0, 0, 0, 0.6);
+  --shadow-main: rgba(0, 0, 0, 0.15);
+  --glass-blur: blur(25px);
+}
+
+/* Global Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text-main);
+  background-color: #000;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Wallpaper Layer with Mica Glass overlay */
+.os-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background-size: cover;
+  background-position: center;
+  transition: background var(--transition-smooth);
+}
+
+.os-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-glass-tint);
+  backdrop-filter: saturate(1.2);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Elegant Glass Panels */
+.glass-panel {
+  background: var(--bg-primary);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--bg-border);
+  box-shadow: 0 8px 32px 0 var(--shadow-main);
+  color: var(--text-main);
+}
+
+/* System Bootscreen */
+.boot-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #0d0d13;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.8s ease-in-out;
+}
+
+.boot-logo {
+  font-size: 3rem;
+  font-weight: 700;
+  background: linear-gradient(45deg, #f72585, #7209b7, #4cc9f0);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 2rem;
+  letter-spacing: 0.15em;
+  animation: logo-glow 2s ease-in-out infinite alternate;
+}
+
+.boot-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  border-top-color: var(--accent-color);
+  animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+/* Installer / Setup UI */
+.installer-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9000;
+  background: radial-gradient(circle at center, #1b1b2f 0%, #0c0c1e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.installer-wizard {
+  width: 650px;
+  padding: 3rem;
+  border-radius: 20px;
+  text-align: center;
+  animation: window-spawn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.installer-header h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.installer-subtitle {
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+}
+
+.editions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+/* Scrollbar styling for glass containers */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+.edition-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--bg-border);
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition-bounce);
+}
+
+.edition-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-2px);
+  border-color: var(--accent-color);
+}
+
+.edition-card.selected {
+  background: rgba(var(--accent-rgb), 0.15);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.3);
+}
+
+.edition-card h4 {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.edition-card p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.installer-action-btn {
+  background: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.9rem 2.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-bounce);
+  box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.4);
+}
+
+.installer-action-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(var(--accent-rgb), 0.6);
+}
+
+.installer-progress-container {
+  margin: 2rem 0;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-color), #4cc9f0);
+  transition: width 0.1s linear;
+}
+
+.progress-log {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent-color);
+  height: 1.2rem;
+  overflow: hidden;
+}
+
+/* Graphical Desktop Shell Layout */
+.desktop-shell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+
+.desktop-workspace {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+/* Desktop Grid Icons */
+.desktop-icons-container {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  z-index: 15;
+}
+
+.desktop-app-icon {
+  width: 85px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: var(--transition-bounce);
+  border-radius: 12px;
+  padding: 0.5rem 0.25rem;
+  border: 1px solid transparent;
+}
+
+.desktop-app-icon:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.desktop-app-icon img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+  transition: transform 0.2s ease;
+}
+
+.desktop-app-icon:active img {
+  transform: scale(0.9);
+}
+
+.desktop-app-icon span {
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.85);
+  color: #ffffff; /* keep white for desktop icon titles for legibility on dark wallpaper backgrounds */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Simulated App window */
+.app-window {
+  position: absolute;
+  min-width: 320px;
+  min-height: 240px;
+  border-radius: 12px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: window-spawn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.app-window.minimized {
+  display: none !important;
+}
+
+.app-window.maximized {
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0;
+  border: none;
+}
+
+.app-window.active {
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+  border-color: var(--bg-border-focus);
+}
+
+.window-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  cursor: move;
+  border-bottom: 1px solid var(--bg-border);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.window-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.window-info img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.window-info span {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.window-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.window-btn {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.window-btn:hover {
+  opacity: 0.8;
+}
+
+.window-btn.close {
+  background-color: #ff5f56;
+}
+
+.window-btn.minimize {
+  background-color: #ffbd2e;
+}
+
+.window-btn.maximize {
+  background-color: #27c93f;
+}
+
+.window-content {
+  flex: 1;
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.window-content iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+}
+
+/* Fallback SVG Icon Renderer in CSS */
+.emoji-icon-fallback {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(var(--accent-rgb), 0.2);
+  border: 1px solid rgba(var(--accent-rgb), 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  box-shadow: 0 4px 10px rgba(var(--accent-rgb), 0.2);
+}
+
+/* System Taskbar (Mica blurred bottom bar) */
+.system-taskbar {
+  height: 52px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  border-top: 1px solid var(--bg-border);
+  position: relative;
+}
+
+.taskbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.start-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent-color);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 10px rgba(var(--accent-rgb), 0.4);
+  transition: var(--transition-bounce);
+}
+
+.start-btn:hover {
+  transform: scale(1.08) rotate(5deg);
+  box-shadow: 0 4px 15px rgba(var(--accent-rgb), 0.6);
+}
+
+.taskbar-shortcuts {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.taskbar-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition-bounce);
+  position: relative;
+}
+
+.taskbar-icon:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.taskbar-icon img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.taskbar-icon.running::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  width: 6px;
+  height: 2px;
+  background-color: var(--accent-color);
+  border-radius: 1px;
+}
+
+.taskbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.system-clock {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-main);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Glassmorphic Start Menu */
+.start-menu {
+  position: absolute;
+  bottom: 60px;
+  left: 1rem;
+  width: 480px;
+  height: 520px;
+  border-radius: 16px;
+  z-index: 200;
+  display: none; /* toggled by index.js */
+  flex-direction: column;
+  padding: 1.5rem;
+  animation: start-slide-up 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.start-menu.open {
+  display: flex;
+}
+
+.start-search-box {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--bg-border);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  font-family: var(--font-sans);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  outline: none;
+  margin-bottom: 1.5rem;
+  transition: var(--transition-smooth);
+}
+
+.start-search-box:focus {
+  border-color: var(--accent-color);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.start-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.start-apps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.start-app-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0.75rem 0.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition-bounce);
+}
+
+.start-app-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: scale(1.05);
+}
+
+.start-app-item img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
+.start-app-item span {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.start-footer {
+  border-top: 1px solid var(--bg-border);
+  margin-top: 1rem;
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.start-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.start-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: white;
+}
+
+.start-user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.power-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: color 0.2s ease;
+}
+
+.power-btn:hover {
+  color: #ff5f56;
+}
+
+/* HX SUPER COMPUTER: Retro CRT Terminal Layout */
+.terminal-shell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
+  background-color: #030303;
+  display: none; /* active for super computer */
+  flex-direction: column;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.terminal-shell.active {
+  display: flex;
+}
+
+/* Retro Monitor Tube overlay */
+.crt-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 4px, 6px 100%;
+  opacity: 0.85;
+}
+
+.crt-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.4) 100%);
+}
+
+.terminal-container {
+  flex: 1;
+  font-family: var(--font-mono);
+  color: #39ff14; /* retro green */
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-bottom: 2rem;
+}
+
+.terminal-log {
+  white-space: pre-wrap;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.terminal-prompt-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.terminal-prompt-symbol {
+  color: #39ff14;
+}
+
+.terminal-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #39ff14;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  flex: 1;
+  caret-color: #39ff14;
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
+}
+
+/* Animations */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes logo-glow {
+  from {
+    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.3));
+  }
+  to {
+    filter: drop-shadow(0 0 20px rgba(var(--accent-rgb), 0.8));
+  }
+}
+
+@keyframes window-spawn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes start-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.edition-badge {
+  background: rgba(var(--accent-rgb), 0.2);
+  color: var(--accent-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(var(--accent-rgb), 0.3);
+}
