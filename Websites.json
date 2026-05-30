@@ -40,5 +40,12 @@
     "description": "Real online mobile Wikipedia portal.",
     "isLocal": false,
     "category": "Reference"
+  },
+  {
+    "name": "HX OS",
+    "url": "online websites/hxos.html",
+    "description": "Simulated web search portal for index databases.",
+    "isLocal": true,
+    "category": "shit"
   }
 ]
