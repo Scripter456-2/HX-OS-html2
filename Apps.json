@@ -38,5 +38,13 @@
     "license": "MIT",
     "IsStarter": false,
     "description": "A standard web browser designed to navigate online websites inside the OS."
-  }
+  },
+  {
+    "name": "HX Office",
+    "icon": "apps/icons/browser.png",
+    "path": "apps/browser.html",
+    "license": "MIT",
+    "IsStarter": false,
+    "description": "A standard web browser designed to navigate online websites inside the OS."
+  },
 ]
