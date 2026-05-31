@@ -13,7 +13,7 @@ if (!window.eel) {
         "name": "App Store",
         "icon": "🛍️",
         "path": "apps/store.html",
-        "license": "HX-CORE-001",
+        "license": "MIT",
         "IsStarter": true,
         "description": "Browse and install application software onto HX OS."
       },
@@ -21,7 +21,7 @@ if (!window.eel) {
         "name": "Settings",
         "icon": "⚙️",
         "path": "apps/settings.html",
-        "license": "HX-CORE-002",
+        "license": "MIT",
         "IsStarter": true,
         "description": "Customize your desktop, wallpapers, personalization themes and settings."
       },
@@ -29,7 +29,7 @@ if (!window.eel) {
         "name": "App Creator",
         "icon": "🛠️",
         "path": "apps/creator.html",
-        "license": "HX-DEV-999",
+        "license": "MIT",
         "IsStarter": true,
         "description": "Create custom app widgets by typing their direct URL pathways."
       },
@@ -37,7 +37,7 @@ if (!window.eel) {
         "name": "HX Notepad",
         "icon": "📝",
         "path": "apps/notepad.html",
-        "license": "HX-FREE-101",
+        "license": "MIT",
         "IsStarter": false,
         "description": "A robust, modern and sleek light notepad environment."
       },
@@ -45,7 +45,7 @@ if (!window.eel) {
         "name": "HX Browser",
         "icon": "🌐",
         "path": "apps/browser.html",
-        "license": "HX-FREE-202",
+        "license": "MIT",
         "IsStarter": false,
         "description": "A standard web browser designed to navigate online websites inside the OS."
       }
