@@ -1,0 +1,42 @@
+[
+  {
+    "name": "App Store",
+    "icon": "apps/icons/appstore.png",
+    "path": "apps/store.html",
+    "license": "ARR",
+    "IsStarter": true,
+    "description": "Browse and install application software onto HX OS."
+  },
+  {
+    "name": "Settings",
+    "icon": "apps/icons/settings.png",
+    "path": "apps/settings.html",
+    "license": "ARR",
+    "IsStarter": true,
+    "description": "Customize your desktop, wallpapers, personalization themes and settings."
+  },
+  {
+    "name": "App Creator",
+    "icon": "apps/icons/creator.png",
+    "path": "apps/creator.html",
+    "license": "MIT",
+    "IsStarter": true,
+    "description": "Create custom app widgets by typing their direct URL pathways."
+  },
+  {
+    "name": "HX Notepad",
+    "icon": "apps/icons/notepad.png",
+    "path": "apps/notepad.html",
+    "license": "ARR",
+    "IsStarter": false,
+    "description": "A robust, modern and sleek light notepad environment."
+  },
+  {
+    "name": "HX Browser",
+    "icon": "apps/icons/browser.png",
+    "path": "apps/browser.html",
+    "license": "MIT",
+    "IsStarter": false,
+    "description": "A standard web browser designed to navigate online websites inside the OS."
+  }
+]
